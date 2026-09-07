@@ -30,9 +30,16 @@ class SoftmaxPolicy(BasePolicy):
     ):
         if ranking_length != 1:
             raise NotImplementedError()
+        
+        logits = self.base_model(user_ids , requires_grad = False)
+        if is_deterministic:
+            return torch.argmax(logits , dim = 1)
+        else: 
+            noise = gumbel_noise_like(logits)
+            scores = noise + logits
 
-        # TODO 3.2: Implement the sample action
-
+            return torch.argmax(scores, dim = 1)
+        
     def calc_log_prob(
         self,
         user_ids: torch.Tensor, # (batch_size, )
