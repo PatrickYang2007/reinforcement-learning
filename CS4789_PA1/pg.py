@@ -46,8 +46,10 @@ class SoftmaxPolicy(BasePolicy):
         item_ids: torch.Tensor, # (batch_size, )
         is_joint_log_prob: bool = False, # Not used here
     ): 
-        # TODO 3.3: Implement the calc_log_prob
-        pass
+        logits = self.base_model(user_ids)
+
+        chosen = logits[torch.arange(len(user_ids)), item_ids]   
+        return chosen - torch.logsumexp(logits, dim=1)         
 
     def predict_value(
         self,
