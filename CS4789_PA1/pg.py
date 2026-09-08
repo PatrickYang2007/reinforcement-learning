@@ -107,9 +107,8 @@ def train_SoftmaxPolicy(
             loss = -(reward * inter).mean()
 
         elif loss_type == "Regression":
-            # TODO 3.4: Implement the Regression loss
-            pass
-
+            loss = torch.mean((policy.predict_value(user_ids , item_ids.squeeze(1)) - reward)**2)
+            
         else:
             raise NotImplementedError()
 
