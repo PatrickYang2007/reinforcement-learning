@@ -103,8 +103,8 @@ def train_SoftmaxPolicy(
         reward = reward.squeeze(1)
 
         if loss_type == "PolicyGradient":
-            # TODO 3.3: Implement the PolicyGradient loss
-            pass
+            inter = policy.calc_log_prob(user_ids , item_ids.squeeze(1))
+            loss = -(reward * inter).mean()
 
         elif loss_type == "Regression":
             # TODO 3.4: Implement the Regression loss
