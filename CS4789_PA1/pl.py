@@ -148,8 +148,10 @@ class PlackettLucePolicy(BasePolicy):
             log_prob = self.calc_log_prob(user_ids, action.unsqueeze(1), is_joint_log_prob=True)  # shape (batch_size, )
 
         else:
-            # TODO 4.2: Implement the calc_log_prob_given_state
-            pass
+            logits = self.base_model(user_ids)
+            chosen = logits[torch.arange(len(user_ids)), action]
+            used = logits.scatter(1 , memory , -torch.inf)
+            log_prob = chosen - torch.logsumexp(used , dim = 1)
 
         return log_prob
 
