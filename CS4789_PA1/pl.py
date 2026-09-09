@@ -126,13 +126,17 @@ class PlackettLucePolicy(BasePolicy):
         is_deterministic: bool = False,
     ):
         user_ids, memory = state
-
+        
         if memory is None:  # just sample item from softmax without conditioning
             item_ids = self.sample_action(user_ids, ranking_length=1, is_deterministic=is_deterministic).squeeze(1)  # shape (batch_size, )
-
+            return item_ids
         else:
             logits = self.base_model(user_ids , requires_grad = False)
-            noise = gumbel_noise_like(logits)
+            noise = gumbel_noise_like(logits)    
+            if is_deterministic:
+                scores = logits.scatter(1 , memory , -torch.inf)
+                return torch.argmax(scores , dim = 1)
+            
             scores = logits.scatter(1 , memory , -torch.inf) + noise
             action = torch.argmax(scores , dim = 1)
             
