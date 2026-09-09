@@ -131,10 +131,11 @@ class PlackettLucePolicy(BasePolicy):
             item_ids = self.sample_action(user_ids, ranking_length=1, is_deterministic=is_deterministic).squeeze(1)  # shape (batch_size, )
 
         else:
-            # TODO 4.3: Implement the sample_action_given_state
-            # Importantly, do not propagate the gradient here, otherwise the optimization fails
-            pass
-
+            logits = self.base_model(user_ids , requires_grad = False)
+            noise = gumbel_noise_like(logits)
+            scores = logits.scatter(1 , memory , -torch.inf) + noise
+            action = torch.argmax(scores , dim = 1)
+            
         return action
 
     def calc_log_prob_given_state(
