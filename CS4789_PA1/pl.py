@@ -85,8 +85,17 @@ class PlackettLucePolicy(BasePolicy):
         ranking_length: int = 1,
         is_deterministic: bool = False,
     ):
-        # TODO 4.4: Implement the sample_action (do not propagate the gradient here, otherwise the optimization fails)
-        pass
+        logits = self.base_model(user_ids , requires_grad = False) 
+        if is_deterministic: 
+            action = torch.argsort(logits , dim = 1 , descending = True)
+            action = action[: , :ranking_length]
+        else: 
+            noise = gumbel_noise_like(logits)
+            scores = logits + noise
+            action = torch.argsort(scores , dim = 1 , descending = True)
+            action = action[: , :ranking_length]
+
+        return action
 
     def calc_log_prob(
         self,
@@ -126,7 +135,7 @@ class PlackettLucePolicy(BasePolicy):
         is_deterministic: bool = False,
     ):
         user_ids, memory = state
-        
+
         if memory is None:  # just sample item from softmax without conditioning
             item_ids = self.sample_action(user_ids, ranking_length=1, is_deterministic=is_deterministic).squeeze(1)  # shape (batch_size, )
             return item_ids
