@@ -104,7 +104,6 @@ class PlackettLucePolicy(BasePolicy):
         is_joint_log_prob: bool = False,
     ):
 
-        logits = self.base_model(user_ids) 
         ranking_length = item_ids.shape[1]
 
         #gather method you can .gather(dim , and the indecies, so in this case i want to gather indecies item_id)
