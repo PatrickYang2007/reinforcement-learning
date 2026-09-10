@@ -107,12 +107,16 @@ class PlackettLucePolicy(BasePolicy):
         logits = self.base_model(user_ids) 
         ranking_length = item_ids.shape[1]
 
-        # TODO 4.5: Implement the calc_log_prob
-
-        if is_joint_log_prob:
-            log_prob = None  
+        #gather method you can .gather(dim , and the indecies, so in this case i want to gather indecies item_id)
+        logits = self.base_model(user_ids)                   
+        gathered = logits.gather(1, item_ids)                 
+        denom = torch.logsumexp(logits, dim=1).unsqueeze(1)  
+        table = gathered - denom                             
+        
+        if is_joint_log_prob:            
+            log_prob = table.sum(dim = 1)
         else:
-            log_prob = None
+            log_prob = table
 
         return log_prob
 
