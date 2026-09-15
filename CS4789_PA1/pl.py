@@ -199,12 +199,12 @@ def train_PLPolicy_efficiently(
         agg_reward = reward.sum(dim=1)  # shape (batch_size,), ranking-wise reward r(c, σ)
 
         if loss_type == "Regression":
-            # TODO 4.5: Implement loss
-            pass
+            pred = policy.predict_value(user_ids, item_ids)  # shape (batch_size, ranking_length)
+            loss = ((pred - reward) ** 2).mean()
 
         elif loss_type == "PolicyGradient":
-            # TODO 4.5: Implement loss
-            pass
+            joint_log_prob = policy.calc_log_prob(user_ids, item_ids, is_joint_log_prob=True)  # shape (batch_size,)
+            loss = -(agg_reward * joint_log_prob).mean()
 
         else:
             raise NotImplementedError()
@@ -251,19 +251,23 @@ def train_PLPolicy_autoregressively(
 
     for i in range(n_steps):
         state = env.reset(batch_size=batch_size, ranking_length=ranking_length)
+        joint_log_prob = 0.0
+        agg_reward = 0.0
 
         # this part is step-by-step, computationally inefficient compared to gumble-topk trick
         for k in range(ranking_length):
             action = policy.sample_action_given_state(state)
             next_state, reward = env.step(action)
 
-            # TODO: Implement the autoregressive PolicyGradient loss at step k
-            # using policy.calc_log_prob_given_state(state, action) and reward.
-            # Accumulate into `loss` and `agg_reward` over the k steps.
-            pass
+            # accumulate the exact per-step log prob (masked denominator) and the ranking reward
+            joint_log_prob = joint_log_prob + policy.calc_log_prob_given_state(state, action)  # shape (batch_size,)
+            agg_reward = agg_reward + reward.squeeze(1)  # shape (batch_size,)
 
             # update the state (i.e., memory of previously sampled items)
             state = next_state
+
+        # REINFORCE with the ranking-wise reward: r_{1:k} * grad log Pi(a_{1:k} | x)
+        loss = -(agg_reward * joint_log_prob).mean()
 
         optimizer.zero_grad()
 
