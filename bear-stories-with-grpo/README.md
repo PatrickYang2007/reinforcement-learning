@@ -2,7 +2,6 @@
 
 Post-trains the [TinyStories-33M](https://huggingface.co/roneneldan/TinyStories-33M) language model with **Group Relative Policy Optimization (GRPO)** so it writes stories about bears. The experiments compare a sparse keyword reward with a dense embedding-similarity reward, each with and without PPO-style ratio clipping.
 
-Course project for Cornell CS 4789/5789 (Introduction to Reinforcement Learning), Fall 2026, built on starter code provided by the course staff.
 
 ## How it works
 
