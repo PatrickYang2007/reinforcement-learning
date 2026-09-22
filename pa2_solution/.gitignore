@@ -1,0 +1,3 @@
+# Model weights are ~300 MB each (GitHub rejects files over 100 MB).
+pretrained/
+runs/**/checkpoint/
