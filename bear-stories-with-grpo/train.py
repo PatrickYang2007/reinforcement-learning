@@ -1,6 +1,6 @@
 """Grouped rollout + GRPO training with optional ratio clipping.
 
-Clipping (``clip_epsilon``) is the regularization axis for the TA 2×2 grid.
+Clipping (``clip_epsilon``) is the regularization axis of the 2×2 experiment grid.
 ``kl_beta`` defaults to 0 so clipping is the only regularizer unless enabled.
 """
 
@@ -293,7 +293,6 @@ def train_grpo(
         for i in range(config.prompts_per_update):
             batch_prompts.append(prompts[(start + i) % len(prompts)])
 
-        # TODO 5: BEGIN training_loop
         # Sample G completions per prompt from the current (rollout) policy.
         # A per-step seed keeps runs reproducible without repeating the same noise.
         rollout = generate_groups(
@@ -306,7 +305,6 @@ def train_grpo(
         rewards = reward_fn(rollout.completions)
         advantages = group_advantages(rewards.to(device), rollout.group_ids)
         update_metrics = grpo_step(policy, reference, opt, rollout, advantages, config)
-        # TODO 5: END training_loop
 
         signal = float((advantages.abs() > 0).float().mean())
         if config.sample_every and (step + 1) % config.sample_every == 0:

@@ -178,7 +178,7 @@ def train_PLPolicy_efficiently(
     env: RecEnv,
     policy: PlackettLucePolicy,
     loss_type: str = "Regression",  # or "PolicyGradient"
-    n_steps: int = 10000,  # hyperparams are tentative, need to be checked
+    n_steps: int = 10000,
     batch_size: int = 32,
     ranking_length: int = 1,
     learning_rate: float = 1e-3,
@@ -235,7 +235,7 @@ def train_PLPolicy_autoregressively(
     env: RecEnv,
     policy: PlackettLucePolicy,
     loss_type: str = "AutoRegressive",
-    n_steps: int = 10000,  # hyperparams are tentative, need to be checked
+    n_steps: int = 10000,
     batch_size: int = 32,
     ranking_length: int = 1,
     learning_rate: float = 1e-3,

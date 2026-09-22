@@ -83,7 +83,7 @@ def train_SoftmaxPolicy(
     env: RecEnv,
     policy: SoftmaxPolicy,
     loss_type: str = "Regression",  # or "PolicyGradient"
-    n_steps: int = 10000,  # hyperparams are tentative, need to be checked
+    n_steps: int = 10000,
     batch_size: int = 32,
     ranking_length: int = 1,
     learning_rate: float = 1e-3,

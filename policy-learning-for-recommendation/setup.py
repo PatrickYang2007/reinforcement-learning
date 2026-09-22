@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="rl_pa1",
     version="0.1.0",
-    description="Policy gradient & Plackett-Luce ranking assignment (PG / PL)",
+    description="Policy gradient & Plackett-Luce ranking policies for recommendation (PG / PL)",
     python_requires=">=3.9",
     py_modules=[
         "base",

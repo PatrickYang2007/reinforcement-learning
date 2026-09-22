@@ -41,17 +41,14 @@ class SparseBearReward:
     name = "sparse"
 
     def __call__(self, completions: Sequence[str]) -> torch.Tensor:
-        # TODO 3.1: BEGIN sparse_reward
         values = [1.0 if bear_mentions(text) >= 1 else 0.0 for text in completions]
-        # TODO 3.1: END sparse_reward
         return torch.tensor(values, dtype=torch.float32).detach()
 
 
 class DenseStoryReward:
     """Whole-story MiniLM cosine similarity to a target string (default ``bear``).
 
-    Embedder matches the assignment style:
-    ``SentenceTransformer("all-MiniLM-L6-v2")``.
+    Embedder: ``SentenceTransformer("all-MiniLM-L6-v2")``.
     """
 
     name = "dense"
@@ -79,7 +76,6 @@ class DenseStoryReward:
                 raise ImportError(
                     "dense reward needs sentence-transformers: pip install -e '.[semantic]'"
                 ) from exc
-            # Same constructor students see in the assignment notebook.
             self._model = SentenceTransformer(self.model_name, device=self.device)
         return self._model
 
@@ -100,14 +96,12 @@ class DenseStoryReward:
             return out
         texts = [completions[i] for i in active]
         emb = self._encode(texts)
-        # TODO 3.2: BEGIN dense_reward
         if self._target is None:
             # Encode the target once; later calls reuse this unit vector.
             target = self._encode([self.target_text])
             self._target = torch.nn.functional.normalize(target, dim=-1)[0]
         emb = torch.nn.functional.normalize(emb, dim=-1)
         scores = (emb @ self._target.to(emb.device)).cpu()
-        # TODO 3.2: END dense_reward
         if not bool(torch.isfinite(scores).all()):
             raise ValueError("dense reward produced non-finite scores")
         out[torch.tensor(active, dtype=torch.long)] = scores

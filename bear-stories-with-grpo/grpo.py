@@ -1,4 +1,4 @@
-"""GRPO math: fill in the marked TODO regions."""
+"""GRPO math: completion log-probs, group-relative advantages, clipped surrogate loss, and k3 KL penalty."""
 
 from __future__ import annotations
 
@@ -21,13 +21,11 @@ def sequence_log_probs(model, prompt_ids, prompt_mask, completion_ids, action_ma
 
     # all_logits[:, k] predicts the token at position k + 1.
     # target_ids has shape [batch, completion_length].
-    # TODO 2.3: BEGIN sequence_log_probs
     # Positions P-1 .. P+T-2 predict completion tokens 0 .. T-1.
     logits = all_logits[:, prompt_length - 1 : prompt_length - 1 + completion_length, :]
     log_probs = torch.log_softmax(logits.float(), dim=-1)
     selected_log_probs = log_probs.gather(-1, target_ids.unsqueeze(-1)).squeeze(-1)
     selected_log_probs = selected_log_probs.masked_fill(~valid_tokens, 0.0)
-    # TODO 2.3: END sequence_log_probs
 
     return selected_log_probs
 
@@ -66,7 +64,6 @@ def _forward_full_sequence(model, prompt_ids, prompt_mask, completion_ids, actio
 
 def group_advantages(rewards: torch.Tensor, group_ids: torch.Tensor, eps: float = 1e-4) -> torch.Tensor:
     """Normalize rewards [B] within each prompt group using population std."""
-    # TODO 4.1: BEGIN group_advantages
     rewards = rewards.detach().float()
     group_ids = group_ids.to(rewards.device)
     advantages = torch.zeros_like(rewards)
@@ -77,7 +74,6 @@ def group_advantages(rewards: torch.Tensor, group_ids: torch.Tensor, eps: float 
         std = group_rewards.std(correction=0)  # population std: divide by G
         advantages[members] = (group_rewards - baseline) / (std + eps)
     return advantages
-    # TODO 4.1: END group_advantages
 
 
 def grpo_loss(
@@ -95,7 +91,6 @@ def grpo_loss(
     cur = torch.where(mask, current_log_probs, zeros)
     old = torch.where(mask, old, zeros)
 
-    # TODO 4.2: BEGIN grpo_loss
     ratio = torch.exp(cur - old)
     # One advantage per story, broadcast over its tokens.
     adv = advantages.detach().to(ratio.device, ratio.dtype).unsqueeze(1)
@@ -104,7 +99,6 @@ def grpo_loss(
     else:
         clipped = ratio.clamp(1.0 - clip_epsilon, 1.0 + clip_epsilon)
         surrogate = torch.minimum(ratio * adv, clipped * adv)
-    # TODO 4.2: END grpo_loss
 
     if clip_epsilon is None:
         clip_frac = torch.zeros((), device=ratio.device)
@@ -124,7 +118,6 @@ def kl_penalty(current_log_probs, reference_log_probs, action_mask):
     This estimates KL(pi || pi_ref) for samples from pi; reused rollouts
     make it a surrogate after the first optimizer update. Reference is detached.
     """
-    # TODO 4.3: BEGIN kl_penalty
     mask = action_mask.to(dtype=torch.bool)
     zeros = torch.zeros_like(current_log_probs)
     # Zero masked slots before exp() so padding cannot create inf/NaN gradients.
@@ -135,4 +128,3 @@ def kl_penalty(current_log_probs, reference_log_probs, action_mask):
     counts = mask.sum(1).clamp_min(1).to(k3.dtype)
     per_story = (k3 * mask.to(k3.dtype)).sum(1) / counts
     return per_story.mean()
-    # TODO 4.3: END kl_penalty

@@ -420,7 +420,7 @@ def table1_bear_rates(
     eval_prompts: Sequence[str] | None = None,
     arm_order: Sequence[str] | None = None,
 ) -> list[dict[str, Any]]:
-    """Handout Table 1 rows: baseline + post-training bear rates per eval opener.
+    """Table 1 rows: baseline + post-training bear rates per eval opener.
 
     Each row has ``label``, one float per opener in ``eval_prompts``, and ``mean``
     (unweighted average over those openers). Missing rates are ``None``.
@@ -471,7 +471,7 @@ def print_table1_bear_rates(
     eval_prompts: Sequence[str] | None = None,
     arm_order: Sequence[str] | None = None,
 ) -> list[dict[str, Any]]:
-    """Print handout Table 1 (bear-story rate) and return the underlying rows."""
+    """Print Table 1 (bear-story rate) and return the underlying rows."""
     prompts = tuple(eval_prompts) if eval_prompts is not None else EVAL_PREFIXES
     rows = table1_bear_rates(run_dirs, eval_prompts=prompts, arm_order=arm_order)
     headers = ["checkpoint", *prompts, "Mean"]
