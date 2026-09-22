@@ -1,4 +1,4 @@
-"""Authoritative assignment checks: python tests.py."""
+"""Unit tests: python tests.py."""
 import copy
 from types import SimpleNamespace
 import unittest

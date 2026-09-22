@@ -82,7 +82,7 @@ def evaluate(
     semantic_reward_fn: RewardFn | None = None,
     batch_size: int = 16,
 ) -> dict[str, Any]:
-    """Generate stories in batches; optionally skip student metric exercises."""
+    """Generate stories in batches; ``compute_metrics=False`` skips the aggregate metrics."""
     from grpo import sequence_log_probs
     from train import _action_mask
 

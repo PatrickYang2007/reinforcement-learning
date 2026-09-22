@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name="rl_pa2",
     version="0.1.0",
-    description="TinyStories GRPO assignment with sparse and dense rewards",
+    description="GRPO post-training of TinyStories-33M with sparse and dense rewards",
     python_requires=">=3.10",
     py_modules=[
         "eval",
