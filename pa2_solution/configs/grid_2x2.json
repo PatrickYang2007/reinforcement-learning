@@ -1,0 +1,34 @@
+{
+  "shared": {
+    "model_name": "pretrained/tinystories-33m",
+    "max_new_tokens": 256,
+    "updates": 20,
+    "seed": 17,
+    "kl_beta": 0.0,
+    "learning_rate": 1e-05,
+    "prompts_per_update": 1,
+    "inner_epochs": 4
+  },
+  "arms": {
+    "sparse_clip": {
+      "reward": "sparse",
+      "clip_epsilon": 0.2,
+      "group_size": 16
+    },
+    "sparse_noclip": {
+      "reward": "sparse",
+      "clip_epsilon": null,
+      "group_size": 16
+    },
+    "dense_clip": {
+      "reward": "dense",
+      "clip_epsilon": 0.2,
+      "group_size": 16
+    },
+    "dense_noclip": {
+      "reward": "dense",
+      "clip_epsilon": null,
+      "group_size": 16
+    }
+  }
+}
