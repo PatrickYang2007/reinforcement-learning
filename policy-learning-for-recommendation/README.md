@@ -2,8 +2,6 @@
 
 Learns recommendation policies in a simulated contextual-bandit environment. A softmax policy recommends one item and a Plackett–Luce policy ranks K items; both are trained with REINFORCE-style policy gradients and compared against a supervised regression baseline.
 
-Course project for Cornell CS 4789/5789 (Introduction to Reinforcement Learning), Fall 2026, built on starter code provided by the course staff.
-
 ## How it works
 
 - **Environment:** users and items have hidden embeddings. Recommending item *i* to user *u* returns a noisy reward based on their inner product: a Gaussian rating, or a Bernoulli click with probability sigmoid(u · i).
